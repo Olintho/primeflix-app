@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react"
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import api from '../../services/api'
 import './filme-info.css'
 
 function Filme() {
 
     const { id } = useParams();
-    const [filme, setFilme] = useState({})
-    const [loading, setLoading] = useState(true)
+    const navigate = useNavigate();
+
+    const [filme, setFilme] = useState({});
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function loadFilme() {
@@ -22,7 +24,9 @@ function Filme() {
                     setLoading(false)
                 })
                 .catch(() => {
-                    console.log('Fime não encontrado')
+                    console.log('Fime não encontrado');
+                    navigate("/", { replace: true })
+                    return;
                 })
         }
 
@@ -32,8 +36,25 @@ function Filme() {
             console.log("Componente desmontado")
         }
 
-    }, [])
+    }, [id, navigate])
 
+    function salvarFilme() {
+        const minhaLista = localStorage.getItem("@primeflix")
+        let filmesSalvos = JSON.parse(minhaLista) || []
+        const hasFilme = filmesSalvos.some((filmesSalvo) => filmesSalvo.id === filme.id)
+        console.log(hasFilme)
+        if (hasFilme) {
+            alert("Filme existente")
+            return
+        }
+
+        filmesSalvos.push(filme)
+        localStorage.setItem("@primeflix", JSON.stringify(filmesSalvos))
+        alert("Filme salvo com Sucesso!")
+
+    }
+
+    
     if (loading) {
         return (
             <div className="filme-info">
@@ -54,9 +75,9 @@ function Filme() {
                 <strong>Avaliação: {filme.vote_average} / 10</strong>
 
                 <div className="area-buttons">
-                    <button>Salvar</button>
+                    <button onClick={salvarFilme}>Salvar</button>
                     <button>
-                        <a href="##">
+                        <a target="blank" rel="noreferrer" href={`https://youtube.com/results?search_query=${filme.title} Trailer`}>
                             Trailer
                         </a>
                     </button>
