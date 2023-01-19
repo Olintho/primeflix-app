@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from 'react-router-dom'
+import { toast } from "react-toastify"
+
 import api from '../../services/api'
 import './filme-info.css'
 
@@ -24,7 +26,7 @@ function Filme() {
                     setLoading(false)
                 })
                 .catch(() => {
-                    console.log('Fime não encontrado');
+                    toast.error('Fime não encontrado');
                     navigate("/", { replace: true })
                     return;
                 })
@@ -44,13 +46,13 @@ function Filme() {
         const hasFilme = filmesSalvos.some((filmesSalvo) => filmesSalvo.id === filme.id)
         console.log(hasFilme)
         if (hasFilme) {
-            alert("Filme existente")
+            toast.warn("Filme existente")
             return
         }
 
         filmesSalvos.push(filme)
         localStorage.setItem("@primeflix", JSON.stringify(filmesSalvos))
-        alert("Filme salvo com Sucesso!")
+        toast.success("Filme salvo com Sucesso!")
 
     }
 
